@@ -2,6 +2,7 @@ package lead
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"time"
 )
@@ -76,6 +77,7 @@ func (c *Controller) SetBrightness(b int) error {
 	msg.command = setBrightness
 	msg.value = uint8(b)
 
+	c.conn.SetWriteDeadline(time.Now().Add(time.Second))
 	return msg.writeTo(c.conn)
 }
 
@@ -94,6 +96,7 @@ func (c *Controller) SetRGB(r, g, b int) error {
 	msg.command = setRed
 	msg.value = uint8(r)
 
+	c.conn.SetWriteDeadline(time.Now().Add(time.Second))
 	if err := msg.writeTo(c.conn); err != nil {
 		return err
 	}
@@ -102,6 +105,7 @@ func (c *Controller) SetRGB(r, g, b int) error {
 	msg.value = uint8(g)
 	msg.check()
 
+	c.conn.SetWriteDeadline(time.Now().Add(time.Second))
 	if err := msg.writeTo(c.conn); err != nil {
 		return err
 	}
@@ -110,6 +114,7 @@ func (c *Controller) SetRGB(r, g, b int) error {
 	msg.value = uint8(b)
 	msg.check()
 
+	c.conn.SetWriteDeadline(time.Now().Add(time.Second))
 	return msg.writeTo(c.conn)
 }
 
@@ -126,6 +131,7 @@ func (c *Controller) SetOn(on bool) error {
 		msg.value = bitsOff
 	}
 
+	c.conn.SetWriteDeadline(time.Now().Add(time.Second))
 	return msg.writeTo(c.conn)
 }
 
@@ -137,4 +143,8 @@ func (c *Controller) Close() error {
 		return err
 	}
 	return nil
+}
+
+func (c *Controller) String() string {
+	return fmt.Sprintf("%s/%s@%s", c.model, c.serial, c.address)
 }
